@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: clientesdb
+      MYSQL_USER: userdb
+      MYSQL_PASSWORD: userpass
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  cliente-service:
+    image: cliente-service:1.0
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/clientesdb
+      SPRING_DATASOURCE_USERNAME: userdb
+      SPRING_DATASOURCE_PASSWORD: userpass
+    ports:
+      - "8082:8082"
+
+  producto-service:
+    image: producto-service:1.0
+    depends_on:
+      - mysql-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/clientesdb
+      SPRING_DATASOURCE_USERNAME: userdb
+      SPRING_DATASOURCE_PASSWORD: userpass
+    ports:
+      - "8083:8083"
+
+  bff-service:
+    image: bff-service:1.0
+    ports:
+      - "8081:8081"
+
+volumes:
+  mysql-data:
